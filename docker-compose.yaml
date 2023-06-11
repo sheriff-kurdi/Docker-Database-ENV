@@ -1,0 +1,83 @@
+
+version: '3'
+services:
+
+
+  postgres_db:
+    image: mdillon/postgis
+    container_name: postgres
+    restart: always
+    environment:
+      #this environment for creating an empty database
+      - POSTGRES_DB=main_system
+      - POSTGRES_PASSWORD=123456789
+      - POSTGRES_USER=postgres
+    ports:
+      - 5432:5432
+    #volumes:
+     # - /main_system.sql
+    networks:
+      database_env:
+        ipv4_address: 10.5.0.2
+
+  sql_server_db:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    container_name: sqlserver
+    restart: always
+    environment:
+      #this environment for creating an empty database
+      - ACCEPT_EULA=y
+      - SA_PASSWORD=123456789
+    ports:
+      - 1433:1433
+    networks:
+      database_env:
+        ipv4_address: 10.5.0.6
+        
+        
+        
+  mysql_db:
+    image: mysql
+    container_name: mysql
+    restart: always
+    environment:
+      #this environment for creating an empty database
+      - MYSQL_ROOT_PASSWORD=123456789
+    ports:
+      - 3306:3306
+    networks:
+      database_env:
+        ipv4_address: 10.5.0.3    
+
+        
+        
+  mongo_db:
+    image: mongo
+    container_name: mongo
+    restart: always
+    ports:
+      - 27017:27017
+    networks:
+      database_env:
+        ipv4_address: 10.5.0.4
+      
+      
+  adminer:
+    image: adminer
+    container_name: adminer
+    restart: always
+    ports:
+      - 8084:8080
+    networks:
+      database_env:
+        ipv4_address: 10.5.0.5
+      
+      
+      
+networks:
+  database_env:
+    driver: bridge
+    ipam:
+      config:
+       - subnet: 10.5.0.0/16
+         gateway: 10.5.0.1
